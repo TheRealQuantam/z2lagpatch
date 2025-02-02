@@ -1,5 +1,19 @@
 ; For use with snarfblasm
 
+; This patch optimizes the E001 function which reads a byte from the compressed overworld map. Evidently at one point the map was loaded directly from ROM and later changed to copy the map to SRAM then read from there. However the bank switches before and after reading each byte were left in, drastically increasing CPU usage. Removing these saves about 7% of the CPU at peak.
+
+.patch $1e011
+.base $e001
+
+	jmp +
+	
++:
+
+.patch $1e025
+.base $e015
+
+	rts
+
 ; This patch optimizes the F27D function which creates a bit mask of which sprites of a metasprite are offscreen. It's called 15-20 times per frame and can take over 15% of the CPU at peak. The section that's optimized has the following pseudocode:
 
 ; for (Y = 3; Y >= 0; Y--)
