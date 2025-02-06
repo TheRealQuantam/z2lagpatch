@@ -5,14 +5,14 @@
 .patch $1e011
 .base $e001
 
-	jmp +
+	jmp + ; Was jsr RestoreBank
 	
 +:
 
 .patch $1e025
 .base $e015
 
-	rts
+	rts ; Was pha; jsr SwitchBank0; pla; rts
 
 ; This patch optimizes the F27D function which creates a bit mask of which sprites of a metasprite are offscreen. It's called 15-20 times per frame and can take over 15% of the CPU at peak. The section that's optimized has the following pseudocode:
 
@@ -23,8 +23,8 @@
 
 ; This patch optimizes this by taking advantage of the fact that once the relationship of the object to the screen borders is known the bit mask can be generated all at once. This reduces CPU usage by about 9% under peak load.
 
-.patch $1f294 ; $30 bytes available
-.base $f284
+.patch $1f28f ; $35 bytes available
+.base $f27f
 	
 	; $a bytes
 	; Calculate delta = x + $18 - screen_x
